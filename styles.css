@@ -3,3 +3,77 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+body {
+    padding: 10px;
+    width: 90vw;
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(80,120,120);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+}
+
+#heading {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#app {
+    border: 3px solid red;
+    padding: 10px;
+    width: 70%;
+    height: 70%;
+}
+
+#app #subtotal {
+    background-color: white;
+    height: 1rem;
+    line-height: normal;
+    font-size: 1em;
+    padding: 3px;
+
+}
+
+#app #main-display {
+    background-color: white;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    padding: 5px;
+}
+
+#app #buttons {
+    padding: 10px;
+}
+
+#app #buttons button {
+    padding: 5px;
+    width: 55px;
+    aspect-ratio: 1;
+}
+
+.single-btn {
+    
+}
+
+#footer {
+    padding: 15px;
+    margin: 15px 5px 15px 5px;
+}
+
+#footer p {
+    font-size: larger;
+    font-weight: 500;
+}
+
+#footer a {
+    text-decoration: none;
+    cursor: pointer;
+}
