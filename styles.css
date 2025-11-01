@@ -4,10 +4,18 @@
     box-sizing: border-box;
 }
 
+:root {
+    --main-dark-color: #016B61;
+    --main-bg-blue: #70B2B2;
+    --light-blue: #9ECFD4;
+    --main-light-gray: #E5E9C5;
+    --primary-dark: #243435;
+}
+
 body {
     padding: 10px;
-    width: 90vw;
-    height: 90vh;
+    /* width: 90vw; */ 
+    height: 90vh; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -27,14 +35,24 @@ main {
 }
 
 #app {
-    border: 3px solid red;
-    padding: 10px;
-    width: 70%;
-    height: 70%;
+    border: 3px solid var(--primary-dark);
+    background-color: #016B61;
+    border-radius: 15px;
+    padding: 15px;
+    /* width: 70%;
+    height: 70%; */
+}
+
+#app #display {
+    margin: 0.2rem;
+    padding: 15px;
+    border-radius: 10px;
+    border: 3px solid var(--primary-dark);
+    background-color: var(--main-light-gray);
 }
 
 #app #subtotal {
-    background-color: white;
+    background-color: var(--main-light-gray);
     height: 1rem;
     line-height: normal;
     font-size: 1em;
@@ -43,29 +61,50 @@ main {
 }
 
 #app #main-display {
-    background-color: white;
-    height: 1.2rem;
-    line-height: 1.2rem;
+    background-color: var(--main-light-gray);
+    text-align: right;
+    line-height: 2rem;
+    font-size: 2rem;
     padding: 5px;
 }
 
 #app #buttons {
-    padding: 10px;
+    padding: 5px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#app #buttons .btn-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.2rem;
 }
 
 #app #buttons button {
-    padding: 5px;
-    width: 55px;
+    padding: 3px;
+    /* width: 55px; */
+    flex: 1 1 55px;
     aspect-ratio: 1;
+    border: 3px solid var(--primary-dark);
+    outline: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.5rem;
+    cursor: pointer;
+
 }
 
-.single-btn {
+.span-two {
+    height: 55px;
     
 }
 
 #footer {
     padding: 15px;
     margin: 15px 5px 15px 5px;
+    flex: 1 1 220px;
+    flex-wrap: wrap;
+    flex-shrink: 1;
 }
 
 #footer p {
