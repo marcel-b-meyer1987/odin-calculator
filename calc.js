@@ -38,7 +38,10 @@ buttons.forEach(button => {
                 break;
 
             case "+":
-                previousOperand = currentOperand;
+                if (previousOperand == "") {
+                    previousOperand = currentOperand;
+                }
+                
                 setOperator(btnValue);
                 break;
             
@@ -89,22 +92,58 @@ function setOperator(btnValue) {
     console.log(`Set operator to ${btnValue}`);
     operator = btnValue;
 
-    previousOperand = displayMain.innerText;
+    previousOperand = currentOperand;
+    updateDisplay(undefined, currentOperand.toString() + btnValue);
     currentOperand = 0;
-    updateDisplay(previousOperand.toString() + btnValue, currentOperand.toString());
 }
 
 function appendDigit(digit) {
-    console.log(`Digit ${digit} appended.`);
-    currentOperand = parseFloat(displayMain.innerText.toString() + digit);
-    console.log(`Setting currentOperand to ${currentOperand}.`);
-    updateDisplay(undefined, currentOperand);
+
+    // if the display is 0 or empty, just use the entered digit as currentOperand
+    if(currentOperand === 0) {
+        currentOperand = digit;
+        updateDisplay(undefined, currentOperand);
+        return;
+    }
+
+    // if the display contains only a number, it means the user is not finshed entering the digits,
+    // in which case we just need to append the last digit and update the display with the complete operand
+    if (! isNaN(displayMain.innerText)) {
+        console.log(`Digit ${digit} appended.`);
+        currentOperand = parseFloat(displayMain.innerText.toString() + digit);
+        console.log(`Setting currentOperand to ${currentOperand}.`);
+        updateDisplay(undefined, currentOperand);
+        return;
+    }
+
+    // else, this means that the user has already entered an operater (+, -, x or /),
+    // in that case we have to:
+    // 1. parse the display.innerText into display segments: 1) the 1st operand and 2) the 2nd operand (if any) - splitting with the operator
+    // 2. store the operand (=the 1st segment) in the previousOperand variable, parsing it as float first
+    // 3. append the entered digit to the 2nd operand, then store the same in the currentOperand variable after parsing it as float
+    // 4. updating the display with 1) previousOperand - operator - currentOperand
+    let segments = displayMain.innerText.split(operator);
+    console.log(segments);
+
+    previousOperand = parseFloat(segments[0]);
+    console.log(`previousOperand: ${previousOperand}`);
+
+    if (segments.length > 2) {
+        currentOperand = parseFloat(segments[2] + digit);
+    } else {
+        currentOperand = parseFloat(digit);
+    }
+    console.log(`currentOperand: ${currentOperand}`);
+
+    updateDisplay(undefined, `${previousOperand} ${operator} ${currentOperand}`);
 }
 
 function updateDisplay(previous, current) {
     // update display for the previous and/or current operand (whichever is passed in as parameter)
-    if (previous != undefined) {
+    if (previous != undefined && previous != 0) {
         displaySubTotal.innerText = previous.toString();
+    } else {
+        displaySubTotal.innerText = "";
     }
 
     if(current != undefined) {
@@ -116,7 +155,7 @@ function allClear() {
     previousOperand = 0;
     currentOperand = 0;
     operator = "";
-    updateDisplay(previousOperand, currentOperand);
+    updateDisplay("", currentOperand);
 }
 
 // main function of the app
