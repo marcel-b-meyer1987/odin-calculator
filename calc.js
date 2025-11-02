@@ -43,24 +43,93 @@ buttons.forEach(button => {
                 allClear();
                 break;
 
-            case "+":                
-                setOperator(btnValue);
-                break;
+            case "+":    
+                if (currentOperand != undefined && previousOperand != undefined && operator != "") {
+                    try {
+                        console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
+                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
+
+                        previousOperand = result;
+                        operator = btnValue;
+                        currentOperand = undefined;
+                        console.log(`Set previousOperand to ${previousOperand}.`);
+                        updateDisplay(undefined, `${previousOperand} ${operator}`);
+                        return;
+                    } catch (error) {
+                        alert(error);
+                        break;
+                    }
+                    
+                } else {
+                    setOperator(btnValue);
+                    break;
+                }      
             
             case "-":
-                previousOperand = currentOperand;
-                setOperator(btnValue);
-                break;
+                if (currentOperand != undefined && previousOperand != undefined && operator != "") {
+                    try {
+                        console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
+                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
+
+                        previousOperand = result;
+                        operator = btnValue;
+                        currentOperand = undefined;
+                        console.log(`Set previousOperand to ${previousOperand}.`);
+                        updateDisplay(undefined, `${previousOperand} ${operator}`);
+                        return;
+                    } catch (error) {
+                        alert(error);
+                        break;
+                    }
+                    
+                } else {
+                    setOperator(btnValue);
+                    break;
+                }
             
             case "x":
-                previousOperand = currentOperand;
-                setOperator(btnValue);
-                break;
+                if (currentOperand != undefined && previousOperand != undefined && operator != "") {
+                    try {
+                        console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
+                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
+
+                        previousOperand = result;
+                        operator = btnValue;
+                        currentOperand = undefined;
+                        console.log(`Set previousOperand to ${previousOperand}.`);
+                        updateDisplay(undefined, `${previousOperand} ${operator}`);
+                        return;
+                    } catch (error) {
+                        alert(error);
+                        break;
+                    }
+                    
+                } else {
+                    setOperator(btnValue);
+                    break;
+                }
 
             case "/":
-                previousOperand = currentOperand;
-                setOperator(btnValue);
-                break;
+                if (currentOperand != undefined && previousOperand != undefined && operator != "") {
+                    try {
+                        console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
+                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
+
+                        previousOperand = result;
+                        operator = btnValue;
+                        currentOperand = undefined;
+                        console.log(`Set previousOperand to ${previousOperand}.`);
+                        updateDisplay(undefined, `${previousOperand} ${operator}`);
+                        return;
+                    } catch (error) {
+                        alert(error);
+                        break;
+                    }
+                    
+                } else {
+                    setOperator(btnValue);
+                    break;
+                }
 
             case "=":
                 if (currentOperand != undefined && previousOperand != undefined && operator != "") {
@@ -169,7 +238,7 @@ function allClear() {
     currentOperand = undefined;
     operator = "";
     result = undefined;
-    updateDisplay("", currentOperand);
+    updateDisplay("", "0");
 }
 
 // main function of the app
