@@ -43,6 +43,11 @@ buttons.forEach(button => {
                 allClear();
                 break;
 
+            case "D":
+                console.log("Calling del()");
+                del();
+                break;
+
             case ",":
                 appendComma();
                 break;
@@ -252,6 +257,16 @@ function updateDisplay(previous, current) {
     }
 }
 
+function del() {
+    currentOperand = parseFloat(displayMain.innerText); // parse the currentOperand as per the display as float
+    let del = currentOperand.toString().substring(0, currentOperand.toString().length - 1); // store everything except the last character in del
+    if (del === "") {
+        updateDisplay(undefined, "0");
+    } else {
+        updateDisplay(undefined, del);
+    }
+}
+
 function allClear() {
     previousOperand = undefined;
     currentOperand = undefined;
@@ -288,7 +303,6 @@ function operate(operand1, operation, operand2) {
     return result;
 
 }
-
 
 // functions for individual mathematical operations
 function add(a, b) {
