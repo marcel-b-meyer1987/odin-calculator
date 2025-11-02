@@ -43,6 +43,10 @@ buttons.forEach(button => {
                 allClear();
                 break;
 
+            case ",":
+                appendComma();
+                break;
+
             case "+":    
                 if (currentOperand != undefined && previousOperand != undefined && operator != "") {
                     try {
@@ -173,9 +177,6 @@ function setOperator(btnValue) {
     }
        
     updateDisplay(undefined, `${currentOperand} ${operator}`);
-
-    // previousOperand = currentOperand;
-    // currentOperand = 0;
 }
 
 function appendDigit(digit) {
@@ -187,7 +188,7 @@ function appendDigit(digit) {
         return;
     }
 
-    // if the display contains only a number, it means the user is not finshed entering the digits,
+    // if the display contains only a number, it means the user is not finshed entering the number,
     // in which case we just need to append the last digit and update the display with the complete operand
     if (! isNaN(displayMain.innerText)) {
         console.log(`Digit ${digit} appended.`);
@@ -217,6 +218,24 @@ function appendDigit(digit) {
         console.log(`currentOperand: ${currentOperand}`);
 
         updateDisplay(undefined, `${previousOperand} ${operator} ${currentOperand}`);
+    }
+}
+
+function appendComma() {
+    console.log("appending comma");
+
+    // if the display is 0 or empty, just set display to "0,"
+    if(currentOperand === 0 || currentOperand === undefined) {
+        updateDisplay(undefined, "0.");
+        return;
+    }
+
+    // if the display already contains a number which doesn't contain a comma, we append it to the display
+    if (! isNaN(displayMain.innerText)) {
+        currentOperand = parseFloat(displayMain.innerText);
+        console.log(`Setting currentOperand to ${currentOperand}.`);
+        updateDisplay(undefined, currentOperand + ",");
+        return;
     }
 }
 
