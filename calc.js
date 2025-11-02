@@ -1,5 +1,6 @@
 
 //ROBERT MEYER
+//ROBERT MEYER
 
 "use strict";
 
@@ -7,11 +8,16 @@
 let previousOperand = 0;
 let currentOperand = 0;
 let operator = "";
+let segments = [];
+let result = undefined;
 
 const displaySubTotal = document.getElementById("subtotal");
 console.log(displaySubTotal);
 const displayMain = document.getElementById("main-display");
 console.log(displayMain);
+
+// initialize displays
+updateDisplay(0, 0);
 
 
 // initialize event listeners for buttons:
@@ -37,11 +43,7 @@ buttons.forEach(button => {
                 allClear();
                 break;
 
-            case "+":
-                if (previousOperand == "") {
-                    previousOperand = currentOperand;
-                }
-                
+            case "+":                
                 setOperator(btnValue);
                 break;
             
@@ -64,8 +66,9 @@ buttons.forEach(button => {
                 if (currentOperand != undefined && previousOperand != undefined && operator != "") {
                     try {
                         console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
-                        let result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
+                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
                         updateDisplay("", result);
+                        
                         break;
                     } catch (error) {
                         alert(error);
@@ -89,12 +92,21 @@ buttons.forEach(button => {
 // APP LOGIC BELOW:
 
 function setOperator(btnValue) {
-    console.log(`Set operator to ${btnValue}`);
     operator = btnValue;
+    console.log(`Set operator to ${btnValue}`);
 
-    previousOperand = currentOperand;
-    updateDisplay(undefined, currentOperand.toString() + btnValue);
-    currentOperand = 0;
+    if (result != undefined) {
+        previousOperand = result;
+        currentOperand = undefined;
+        console.log(`Set previousOperand to ${previousOperand}.`);
+        updateDisplay(undefined, `${previousOperand} ${operator}`);
+        return;
+    }
+       
+    updateDisplay(undefined, `${currentOperand} ${operator}`);
+
+    // previousOperand = currentOperand;
+    // currentOperand = 0;
 }
 
 function appendDigit(digit) {
@@ -110,32 +122,33 @@ function appendDigit(digit) {
     // in which case we just need to append the last digit and update the display with the complete operand
     if (! isNaN(displayMain.innerText)) {
         console.log(`Digit ${digit} appended.`);
-        currentOperand = parseFloat(displayMain.innerText.toString() + digit);
+        currentOperand = parseFloat(displayMain.innerText.toString() + digit.toString());
         console.log(`Setting currentOperand to ${currentOperand}.`);
         updateDisplay(undefined, currentOperand);
         return;
-    }
-
-    // else, this means that the user has already entered an operater (+, -, x or /),
-    // in that case we have to:
-    // 1. parse the display.innerText into display segments: 1) the 1st operand and 2) the 2nd operand (if any) - splitting with the operator
-    // 2. store the operand (=the 1st segment) in the previousOperand variable, parsing it as float first
-    // 3. append the entered digit to the 2nd operand, then store the same in the currentOperand variable after parsing it as float
-    // 4. updating the display with 1) previousOperand - operator - currentOperand
-    let segments = displayMain.innerText.split(operator);
-    console.log(segments);
-
-    previousOperand = parseFloat(segments[0]);
-    console.log(`previousOperand: ${previousOperand}`);
-
-    if (segments.length > 2) {
-        currentOperand = parseFloat(segments[2] + digit);
     } else {
-        currentOperand = parseFloat(digit);
-    }
-    console.log(`currentOperand: ${currentOperand}`);
 
-    updateDisplay(undefined, `${previousOperand} ${operator} ${currentOperand}`);
+        // else, this means that the user has already entered an operater (+, -, x or /),
+        // in that case we have to:
+        // 1. parse the display.innerText into display segments: 1) the 1st operand and 2) the 2nd operand (if any) - splitting with the operator
+        // 2. store the operand (=the 1st segment) in the previousOperand variable, parsing it as float first
+        // 3. append the entered digit to the 2nd operand, then store the same in the currentOperand variable after parsing it as float
+        // 4. updating the display with 1) previousOperand - operator - currentOperand
+        segments = displayMain.innerText.split(operator);
+        console.log(segments);
+
+        previousOperand = parseFloat(segments[0]);
+        console.log(`previousOperand: ${previousOperand}`);
+
+        if (segments[1] != "") {
+            currentOperand = parseFloat(segments[1].toString() + digit.toString());
+        } else {
+            currentOperand = parseFloat(digit);
+        }
+        console.log(`currentOperand: ${currentOperand}`);
+
+        updateDisplay(undefined, `${previousOperand} ${operator} ${currentOperand}`);
+    }
 }
 
 function updateDisplay(previous, current) {
@@ -152,33 +165,40 @@ function updateDisplay(previous, current) {
 }
 
 function allClear() {
-    previousOperand = 0;
-    currentOperand = 0;
+    previousOperand = undefined;
+    currentOperand = undefined;
     operator = "";
+    result = undefined;
     updateDisplay("", currentOperand);
 }
 
 // main function of the app
 function operate(operand1, operation, operand2) {
+
+    let result;
+
     switch(operation) {
         case "+":
-            return add(operand1, operand2);
+            result = add(operand1, operand2);
             break;
         case "-":
-            return subtract(operand1, operand2);
+            result = subtract(operand1, operand2);
             break;
         case "x":
-            return multiply(operand1, operand2);
+            result = multiply(operand1, operand2);
             break;
         case "/":
             if (operand2 != 0) {
-                return divide(operand1, operand2);
+                result = divide(operand1, operand2);
                 break;    
             } else {
                 return new Error("Cannot divide by 0.");
                 break;
             }
     }
+    operator = "";
+    return result;
+
 }
 
 
