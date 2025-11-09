@@ -63,7 +63,12 @@ class Calculator {
 
     del() {    
         // store everything except the last character of the display.innerText in the currentOperand, then updateDisplay
-        this.currentOperand = parseFloat(this.currentOperandDisplay.innerText.substring(0, this.currentOperand.toString().length - 1));
+        if (this.currentOperandDisplay.innerText.length < 2) {
+            this.currentOperand = 0;
+        } else {
+            this.currentOperand = parseFloat(this.currentOperandDisplay.innerText.substring(0, this.currentOperand.toString().length - 1));
+        }
+
         this.updateDisplay();
     }
 
@@ -222,6 +227,47 @@ buttons.forEach(button => {
     });
 });
 
+// initialize event listeners for keyboard:
+document.addEventListener("keyup", (e) => {
+    console.log(e.key + " - " + e.keyCode);
 
+    if (e.key === "Escape") calc.allClear();
 
+    // a number key was pressed, append the digit
+    if (! isNaN(e.key)) {
+        calc.appendDigit(e.key);
+        return;
+    }
 
+    // otherwise, treat the key press accordingly
+    switch(e.key) {
+        case ",":
+            calc.appendComma();
+            break;
+        case "Enter":
+            calc.operate();
+            break;
+        case "Delete":
+            if (e.shiftKey) {
+                calc.allClear();
+                break;
+            } else {
+                calc.del();
+                break;
+            }
+        case "+":
+            calc.setOperator("+");
+            break;
+        case "-":
+            calc.setOperator("-");
+            break;
+        case "*":
+            calc.setOperator("x");
+            break;
+        case "/":
+            calc.setOperator("/");
+            break;
+        default:
+            break;
+    }
+});
