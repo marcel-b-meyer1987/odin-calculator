@@ -1,6 +1,6 @@
 
 //LENI MEYER
-//ROBERT MEYER
+//ROBERT MEYER = 123456
 
 "use strict";
 
@@ -15,7 +15,7 @@ class Calculator {
         // connect display elements from the page to the object
         this.previousOperandDisplay = previousOperandTextElement;
         this.currentOperandDisplay = currentOperandTextElement;
-
+        this.decimalMode = false;
         this.allClear();
     }
 
@@ -58,6 +58,7 @@ class Calculator {
             this.currentOperand = undefined;
         }
         
+        this.decimalMode = false;
         this.updateDisplay();
     }
 
@@ -81,16 +82,26 @@ class Calculator {
     }
 
     appendDigit(digit) {
-        // if the display is 0 or empty, just use the entered digit as currentOperand
+        
         if (this.currentOperand === 0 || this.currentOperand === undefined) {
-            this.currentOperand = parseInt(digit);
-            this.updateDisplay();
-            return;
+            
+            // in decimalMode, we need to prepend "0.", followed by the digit
+            if (this.decimalMode) {
+                this.currentOperand = parseFloat(`0.${digit}`);
+                this.updateDisplay();
+                return;
+            // if no decimalMode active, just use the entered digit as currentOperand
+            } else {
+                this.currentOperand = parseInt(digit);
+                this.updateDisplay();
+                return;
+            }
+                    
         }
 
-        // otherwise, we append the selected digit, then update the Display
+        // if the currenOperand is > 0, we append the selected digit, then update the Display
         this.currentOperand = parseFloat(this.currentOperandDisplay.innerText + digit.toString());
-        this.updateDisplay();
+        this.updateDisplay();        
         
     }
 
@@ -99,7 +110,9 @@ class Calculator {
 
         // if the display is 0 or empty, just set display to "0."
         if(this.currentOperand === 0 || this.currentOperand === undefined) {
-            this.currentOperandDisplay = "0."
+            this.currentOperandDisplay.innerText = "0.";
+            this.currentOperand = 0;
+            this.decimalMode = true;
             return;
         }
 
@@ -138,6 +151,7 @@ class Calculator {
         this.currentOperand = this.result;
         this.updateDisplay();
         this.operator = "";
+        this.decimalMode = false;
     }
 
 }
