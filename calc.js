@@ -1,24 +1,150 @@
 
-//ROBERT MEYER
+//LENI MEYER
 //ROBERT MEYER
 
 "use strict";
 
-// initialize basic variables for all operations
-let previousOperand = 0;
-let currentOperand = 0;
-let operator = "";
-let segments = [];
-let result = undefined;
+// initialize basic variables and constants for all operations
+const DEC_SEPARATOR =".";
+
+// define Calculator class
+class Calculator {
+
+    constructor(previousOperandTextElement, currentOperandTextElement) {
+        
+        // connect display elements from the page to the object
+        this.previousOperandDisplay = previousOperandTextElement;
+        this.currentOperandDisplay = currentOperandTextElement;
+
+        this.allClear();
+    }
+
+    updateDisplay() {
+       if (this.previousOperand != undefined) {
+            this.previousOperandDisplay.innerText = this.previousOperand;
+       }
+       
+       if (this.operator != "" && this.operator != undefined) {
+            this.previousOperandDisplay.innerText += ` ${this.operator}`;
+       }
+
+       if (this.currentOperand != undefined) {
+            this.currentOperandDisplay.innerText = this.currentOperand;
+        } else {
+            this.currentOperandDisplay.innerText = "0";
+        }
+       
+    }
+
+    setOperator(btnValue) {
+
+        if (this.currentOperand === "" || this.currentOperand === undefined) return;
+        if (this.previousOperandDisplay.innerText !== "0" && this.previousOperandDisplay.innerText !== "") {
+            this.operate();
+        }
+        this.operator = btnValue;
+        console.log(`Set operator to ${btnValue}`);
+
+        if (this.result != undefined) {
+            this.previousOperand = this.result;
+            this.currentOperand = undefined;
+            console.log(`Set previousOperand to ${this.previousOperand}.`);
+            this.updateDisplay();
+            return;
+        }
+
+        if (this.currentOperand != undefined) {
+            this.previousOperand = this.currentOperand;
+            this.currentOperand = undefined;
+        }
+        
+        this.updateDisplay();
+    }
+
+    del() {    
+        // store everything except the last character of the display.innerText in the currentOperand, then updateDisplay
+        this.currentOperand = parseFloat(this.currentOperandDisplay.innerText.substring(0, this.currentOperand.toString().length - 1));
+        this.updateDisplay();
+    }
+
+    allClear() {
+        this.previousOperand = 0;
+        this.currentOperand = 0;
+        this.operator = undefined;
+        this.result = undefined;
+        this.updateDisplay();
+    }
+
+    appendDigit(digit) {
+        // if the display is 0 or empty, just use the entered digit as currentOperand
+        if (this.currentOperand === 0 || this.currentOperand === undefined) {
+            this.currentOperand = parseInt(digit);
+            this.updateDisplay();
+            return;
+        }
+
+        // otherwise, we append the selected digit, then update the Display
+        this.currentOperand = parseFloat(this.currentOperandDisplay.innerText + digit.toString());
+        this.updateDisplay();
+        
+    }
+
+    appendComma() {
+        console.log("appending comma");
+
+        // if the display is 0 or empty, just set display to "0."
+        if(this.currentOperand === 0 || this.currentOperand === undefined) {
+            this.currentOperandDisplay = "0."
+            return;
+        }
+
+        // if the display doesn't contain a comma, we append it to the display
+        if ((! this.currentOperandDisplay.innerText.includes(".")) && (! this.currentOperandDisplay.innerText.includes(","))) {
+            this.currentOperandDisplay.innerText = this.currentOperandDisplay.innerText + DEC_SEPARATOR;            
+            return;
+        }
+    }
+
+    operate() {
+
+        switch(this.operator) {
+            case "+":
+                this.result = this.previousOperand + this.currentOperand;
+                break;
+            case "-":
+                this.result = this.previousOperand - this.currentOperand;
+                break;
+            case "x":
+                this.result = this.previousOperand * this.currentOperand;
+                break;
+            case "/":
+                if (this.currentOperand != 0) {
+                    this.result = this.previousOperand / this.currentOperand;
+                    break;    
+                } else {
+                    return new Error("Cannot divide by 0.");
+                    break;
+                }
+            default:
+                break;
+        }
+
+        
+        this.currentOperand = this.result;
+        this.updateDisplay();
+        this.operator = "";
+    }
+
+}
+
 
 const displaySubTotal = document.getElementById("subtotal");
 console.log(displaySubTotal);
 const displayMain = document.getElementById("main-display");
 console.log(displayMain);
 
-// initialize displays
-updateDisplay(0, 0);
-
+// initialize Calculator object
+const calc = new Calculator(displaySubTotal, displayMain);
 
 // initialize event listeners for buttons:
 const buttons = Array.from(document.querySelectorAll("button"));
@@ -32,7 +158,7 @@ buttons.forEach(button => {
         // handle events based on which button was clicked
         // if button was a number 
         if(! isNaN(btnValue)) {
-            appendDigit(btnValue);
+            calc.appendDigit(btnValue);
             return;
         }
 
@@ -40,113 +166,43 @@ buttons.forEach(button => {
         switch(btnValue) {
             case "AC":
                 console.log("Calling allClear()");
-                allClear();
+                calc.allClear();
                 break;
 
             case "D":
                 console.log("Calling del()");
-                del();
+                calc.del();
+                break;
+
+            case ".":
+                calc.appendComma();
                 break;
 
             case ",":
-                appendComma();
+                calc.appendComma();
                 break;
 
             case "+":    
-                if (currentOperand != undefined && previousOperand != undefined && operator != "") {
-                    try {
-                        console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
-                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
-
-                        previousOperand = result;
-                        operator = btnValue;
-                        currentOperand = undefined;
-                        console.log(`Set previousOperand to ${previousOperand}.`);
-                        updateDisplay(undefined, `${previousOperand} ${operator}`);
-                        return;
-                    } catch (error) {
-                        alert(error);
-                        break;
-                    }
-                    
-                } else {
-                    setOperator(btnValue);
-                    break;
-                }      
+                calc.setOperator(btnValue);
+                break;
             
             case "-":
-                if (currentOperand != undefined && previousOperand != undefined && operator != "") {
-                    try {
-                        console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
-                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
-
-                        previousOperand = result;
-                        operator = btnValue;
-                        currentOperand = undefined;
-                        console.log(`Set previousOperand to ${previousOperand}.`);
-                        updateDisplay(undefined, `${previousOperand} ${operator}`);
-                        return;
-                    } catch (error) {
-                        alert(error);
-                        break;
-                    }
-                    
-                } else {
-                    setOperator(btnValue);
-                    break;
-                }
+                calc.setOperator(btnValue);
+                break;
             
             case "x":
-                if (currentOperand != undefined && previousOperand != undefined && operator != "") {
-                    try {
-                        console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
-                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
-
-                        previousOperand = result;
-                        operator = btnValue;
-                        currentOperand = undefined;
-                        console.log(`Set previousOperand to ${previousOperand}.`);
-                        updateDisplay(undefined, `${previousOperand} ${operator}`);
-                        return;
-                    } catch (error) {
-                        alert(error);
-                        break;
-                    }
-                    
-                } else {
-                    setOperator(btnValue);
-                    break;
-                }
+                calc.setOperator(btnValue);
+                break;
 
             case "/":
-                if (currentOperand != undefined && previousOperand != undefined && operator != "") {
-                    try {
-                        console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
-                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
-
-                        previousOperand = result;
-                        operator = btnValue;
-                        currentOperand = undefined;
-                        console.log(`Set previousOperand to ${previousOperand}.`);
-                        updateDisplay(undefined, `${previousOperand} ${operator}`);
-                        return;
-                    } catch (error) {
-                        alert(error);
-                        break;
-                    }
-                    
-                } else {
-                    setOperator(btnValue);
-                    break;
-                }
+                calc.setOperator(btnValue);
+                break;
 
             case "=":
-                if (currentOperand != undefined && previousOperand != undefined && operator != "") {
+                if (calc.currentOperand != undefined && calc.previousOperand != undefined && calc.operator != "") {
                     try {
-                        console.log(`Calling operate: ${previousOperand} ${operator} ${currentOperand}`);
-                        result = operate(parseFloat(previousOperand), operator, parseFloat(currentOperand));
-                        updateDisplay("", result);
-                        
+                        console.log(`Calling operate: ${calc.previousOperand} ${calc.operator} ${calc.currentOperand}`);
+                        calc.operate();
                         break;
                     } catch (error) {
                         alert(error);
@@ -155,169 +211,17 @@ buttons.forEach(button => {
                     
                 } else {
                     console.log("Operation not possible:");
-                    console.log(`previousOperand: ${previousOperand}`);
-                    console.log(`Operator: ${operator}`);
-                    console.log(`currentOperand: ${currentOperand}`);
+                    console.log(`previousOperand: ${calc.previousOperand}`);
+                    console.log(`Operator: ${calc.operator}`);
+                    console.log(`currentOperand: ${calc.currentOperand}`);
                     break;
                 }
                 
-
         }
 
     });
 });
 
-// APP LOGIC BELOW:
 
-function setOperator(btnValue) {
-    operator = btnValue;
-    console.log(`Set operator to ${btnValue}`);
 
-    if (result != undefined) {
-        previousOperand = result;
-        currentOperand = undefined;
-        console.log(`Set previousOperand to ${previousOperand}.`);
-        updateDisplay(undefined, `${previousOperand} ${operator}`);
-        return;
-    }
-       
-    updateDisplay(undefined, `${currentOperand} ${operator}`);
-}
 
-function appendDigit(digit) {
-
-    // if the display is 0 or empty, just use the entered digit as currentOperand
-    if(currentOperand === 0) {
-        currentOperand = digit;
-        updateDisplay(undefined, currentOperand);
-        return;
-    }
-
-    // if the display contains only a number, it means the user is not finshed entering the number,
-    // in which case we just need to append the last digit and update the display with the complete operand
-    if (! isNaN(displayMain.innerText)) {
-        console.log(`Digit ${digit} appended.`);
-        currentOperand = parseFloat(displayMain.innerText.toString() + digit.toString());
-        console.log(`Setting currentOperand to ${currentOperand}.`);
-        updateDisplay(undefined, currentOperand);
-        return;
-    } else {
-
-        // else, this means that the user has already entered an operater (+, -, x or /),
-        // in that case we have to:
-        // 1. parse the display.innerText into display segments: 1) the 1st operand and 2) the 2nd operand (if any) - splitting with the operator
-        // 2. store the operand (=the 1st segment) in the previousOperand variable, parsing it as float first
-        // 3. append the entered digit to the 2nd operand, then store the same in the currentOperand variable after parsing it as float
-        // 4. updating the display with 1) previousOperand - operator - currentOperand
-        segments = displayMain.innerText.split(operator);
-        console.log(segments);
-
-        previousOperand = parseFloat(segments[0]);
-        console.log(`previousOperand: ${previousOperand}`);
-
-        if (segments[1] != "") {
-            currentOperand = parseFloat(segments[1].toString() + digit.toString());
-        } else {
-            currentOperand = parseFloat(digit);
-        }
-        console.log(`currentOperand: ${currentOperand}`);
-
-        updateDisplay(undefined, `${previousOperand} ${operator} ${currentOperand}`);
-    }
-}
-
-function appendComma() {
-    console.log("appending comma");
-
-    // if the display is 0 or empty, just set display to "0,"
-    if(currentOperand === 0 || currentOperand === undefined) {
-        updateDisplay(undefined, "0.");
-        return;
-    }
-
-    // if the display already contains a number which doesn't contain a comma, we append it to the display
-    if (! isNaN(displayMain.innerText)) {
-        currentOperand = parseFloat(displayMain.innerText);
-        console.log(`Setting currentOperand to ${currentOperand}.`);
-        updateDisplay(undefined, currentOperand + ",");
-        return;
-    }
-}
-
-function updateDisplay(previous, current) {
-    // update display for the previous and/or current operand (whichever is passed in as parameter)
-    if (previous != undefined && previous != 0) {
-        displaySubTotal.innerText = previous.toString();
-    } else {
-        displaySubTotal.innerText = "";
-    }
-
-    if(current != undefined) {
-        displayMain.innerText = current.toString();
-    }
-}
-
-function del() {
-    currentOperand = parseFloat(displayMain.innerText); // parse the currentOperand as per the display as float
-    let del = currentOperand.toString().substring(0, currentOperand.toString().length - 1); // store everything except the last character in del
-    if (del === "") {
-        updateDisplay(undefined, "0");
-    } else {
-        updateDisplay(undefined, del);
-    }
-}
-
-function allClear() {
-    previousOperand = undefined;
-    currentOperand = undefined;
-    operator = "";
-    result = undefined;
-    updateDisplay("", "0");
-}
-
-// main function of the app
-function operate(operand1, operation, operand2) {
-
-    let result;
-
-    switch(operation) {
-        case "+":
-            result = add(operand1, operand2);
-            break;
-        case "-":
-            result = subtract(operand1, operand2);
-            break;
-        case "x":
-            result = multiply(operand1, operand2);
-            break;
-        case "/":
-            if (operand2 != 0) {
-                result = divide(operand1, operand2);
-                break;    
-            } else {
-                return new Error("Cannot divide by 0.");
-                break;
-            }
-    }
-    operator = "";
-    return result;
-
-}
-
-// functions for individual mathematical operations
-function add(a, b) {
-    return a + b;
-}
-
-function subtract(a, b) {
-    return a - b;
-}
-
-function multiply(a, b) {
-    return a * b;
-}
-
-function divide(a, b) {
-    if (b == 0) return
-    return a / b;
-}
